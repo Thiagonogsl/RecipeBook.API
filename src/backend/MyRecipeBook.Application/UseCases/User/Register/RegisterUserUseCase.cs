@@ -1,4 +1,5 @@
-﻿using MyRecipeBook.Communication.Requests;
+﻿using MyRecipeBook.Application.UseCases.User.Register;
+using MyRecipeBook.Communication.Requests;
 using MyRecipeBook.Communication.Responses;
 
 namespace MyRecipeBook.Application.UseCases.User
@@ -18,6 +19,18 @@ namespace MyRecipeBook.Application.UseCases.User
             {
                 Name = request.Name
             };
+        }
+
+        private void Validate(RequestRegisterUserJson request)
+        {
+            var validator = new RegisterUserValidator();
+            var result = validator.Validate(request);
+
+            if (result.IsValid == false)
+            {
+                var errorMessages = result.Errors.Select(e => e.ErrorMessage);
+                throw new Exception();
+            }
         }
     }
 }
