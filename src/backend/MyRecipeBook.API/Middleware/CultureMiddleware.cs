@@ -13,9 +13,16 @@ namespace MyRecipeBook.API.Middleware
 
         public async Task InvokeAsync(HttpContext context)
         {
-            var requestedCulture = context.Request.Headers.AcceptLanguage.FirstOrDefault();
-            var cultureInfo = new CultureInfo(requestedCulture);
+            var suportedLanguages = CultureInfo.GetCultures(CultureTypes.AllCultures);
 
+            var requestedCulture = context.Request.Headers.AcceptLanguage.FirstOrDefault();
+            var cultureInfo = new CultureInfo("en");
+
+            if (string.IsNullOrEmpty(requestedCulture) == false 
+                && suportedLanguages.Any(c => c.Name.Equals(requestedCulture)))
+            {
+                cultureInfo = new CultureInfo(requestedCulture);
+            }
             CultureInfo.CurrentCulture = cultureInfo;
             CultureInfo.CurrentUICulture = cultureInfo;
 
