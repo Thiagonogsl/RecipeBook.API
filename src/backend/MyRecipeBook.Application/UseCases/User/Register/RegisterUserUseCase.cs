@@ -13,6 +13,12 @@ namespace MyRecipeBook.Application.UseCases.User
             Validate(request);
 
             //Mapear a request em uma entidade
+            var user = new Domain.Entities.User
+            {
+                Name = request.Name,
+                Email = request.Email,
+                Password = request.Password
+            };
 
             //Criptografar a senha
 
