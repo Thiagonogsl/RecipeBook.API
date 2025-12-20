@@ -9,6 +9,7 @@ namespace MyRecipeBook.Application.UseCases.User
         public ResponseRegisteredUserJson Execute(RequestRegisterUserJson request)
         {
             // Validate request
+            Validate(request);
 
             //Mapear a request em uma entidade
 

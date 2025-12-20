@@ -118,15 +118,15 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="EMAIL_EMPTY" xml:space="preserve">
-    <value>Email cannot be empty</value>
+    <value>O email não pode ser vazio</value>
   </data>
   <data name="EMAIL_INVALID" xml:space="preserve">
-    <value>Invalid email</value>
+    <value>Email inválido</value>
   </data>
-  <data name="INVALID_PASSWORD" xml:space="preserve">
-    <value>Password must contain 6 or more characters</value>
+  <data name="PASSWORD_INVALID" xml:space="preserve">
+    <value>A senha deve conter 6 ou mais caracteres</value>
   </data>
   <data name="NAME_EMPTY" xml:space="preserve">
-    <value>Name cannot be empty</value>
+    <value>O nome não pode ser vazio</value>
   </data>
 </root>
