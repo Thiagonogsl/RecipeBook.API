@@ -1,4 +1,5 @@
-﻿using MyRecipeBook.Application.UseCases.User.Register;
+﻿using MyRecipeBook.Application.Services.AutoMapper;
+using MyRecipeBook.Application.UseCases.User.Register;
 using MyRecipeBook.Communication.Requests;
 using MyRecipeBook.Communication.Responses;
 using MyRecipeBook.Exceptions.ExceptionsBase;
@@ -13,12 +14,12 @@ namespace MyRecipeBook.Application.UseCases.User
             Validate(request);
 
             //Mapear a request em uma entidade
-            var user = new Domain.Entities.User
+            var autoMapper = new AutoMapper.MapperConfiguration(options =>
             {
-                Name = request.Name,
-                Email = request.Email,
-                Password = request.Password
-            };
+                options.AddProfile(new AutoMapping());
+            }).CreateMapper();
+
+            var user = autoMapper.Map<Domain.Entities.User>(request);
 
             //Criptografar a senha
 
