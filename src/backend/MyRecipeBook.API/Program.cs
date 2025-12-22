@@ -15,7 +15,7 @@ builder.Services.AddMvc(options => options.Filters.Add(typeof(ExceptionFilter)))
 
 // Register application and infrastructure dependencies
 builder.Services.AddApplicationDependencies();
-builder.Services.AddInfrastructureDependencies();
+builder.Services.AddInfrastructureDependencies(builder.Configuration);
 
 var app = builder.Build();
 

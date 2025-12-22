@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MyRecipeBook.Domain.Repositories;
 using MyRecipeBook.Domain.Repositories.User;
@@ -9,15 +10,15 @@ namespace MyRecipeBook.Infrastructure
 {
     public static class DependencyInjectionExtension
     {
-        public static void AddInfrastructureDependencies(this IServiceCollection services)
+        public static void AddInfrastructureDependencies(this IServiceCollection services, IConfiguration configuration)
         {
             // Add infrastructure related dependencies here
-            AddDbContext_MySql(services);
+            AddDbContext_MySql(services, configuration);
             AddRepositories(services);
         }
-        private static void AddDbContext_MySql(IServiceCollection services)
+        private static void AddDbContext_MySql(IServiceCollection services, IConfiguration configuration)
         {
-            var connectionString = "Server=localhost;Database=myrecipebook;Uid=root;Pwd=@Password123";
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
 
             var serverVersion = new MySqlServerVersion(new Version(8, 0, 44));
 
