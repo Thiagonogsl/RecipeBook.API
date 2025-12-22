@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
-using MyRecipeBook.Application.Services.AutoMapper;
 using MyRecipeBook.Application.Services.Cryptography;
 using MyRecipeBook.Application.UseCases.User.Register;
 using MyRecipeBook.Communication.Requests;
 using MyRecipeBook.Communication.Responses;
+using MyRecipeBook.Domain.Repositories;
 using MyRecipeBook.Domain.Repositories.User;
 using MyRecipeBook.Exceptions.ExceptionsBase;
 
@@ -13,17 +13,20 @@ namespace MyRecipeBook.Application.UseCases.User
     {
         private readonly IUserWriteOnlyRepository _userWriteOnlyRepository;
         private readonly IUserReadOnlyRepository _userReadOnlyRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly PasswordEncripter _passwordEncripter;
 
         public RegisterUserUseCase(
             IUserWriteOnlyRepository userWriteOnlyRepository, 
             IUserReadOnlyRepository userReadOnlyRepository,
+            IUnitOfWork unitOfWork,
             IMapper mapper,
             PasswordEncripter passwordEncripter)
         {
             _userWriteOnlyRepository = userWriteOnlyRepository;
             _userReadOnlyRepository = userReadOnlyRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _passwordEncripter = passwordEncripter;
         }
@@ -41,6 +44,7 @@ namespace MyRecipeBook.Application.UseCases.User
 
             //Salvar a entidade no banco de dados
             await _userWriteOnlyRepository.Add(user);
+            await _unitOfWork.SavaChanges();
 
             //Returnar a resposta
             return new ResponseRegisteredUserJson
