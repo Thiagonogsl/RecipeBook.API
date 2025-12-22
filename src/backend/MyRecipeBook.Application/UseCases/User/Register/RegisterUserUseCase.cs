@@ -1,4 +1,5 @@
-﻿using MyRecipeBook.Application.Services.AutoMapper;
+﻿using AutoMapper;
+using MyRecipeBook.Application.Services.AutoMapper;
 using MyRecipeBook.Application.Services.Cryptography;
 using MyRecipeBook.Application.UseCases.User.Register;
 using MyRecipeBook.Communication.Requests;
@@ -8,10 +9,24 @@ using MyRecipeBook.Exceptions.ExceptionsBase;
 
 namespace MyRecipeBook.Application.UseCases.User
 {
-    public class RegisterUserUseCase
+    public class RegisterUserUseCase : IRegisterUserUseCase
     {
         private readonly IUserWriteOnlyRepository _userWriteOnlyRepository;
         private readonly IUserReadOnlyRepository _userReadOnlyRepository;
+        private readonly IMapper _mapper;
+        private readonly PasswordEncripter _passwordEncripter;
+
+        public RegisterUserUseCase(
+            IUserWriteOnlyRepository userWriteOnlyRepository, 
+            IUserReadOnlyRepository userReadOnlyRepository,
+            IMapper mapper,
+            PasswordEncripter passwordEncripter)
+        {
+            _userWriteOnlyRepository = userWriteOnlyRepository;
+            _userReadOnlyRepository = userReadOnlyRepository;
+            _mapper = mapper;
+            _passwordEncripter = passwordEncripter;
+        }
 
         public async Task<ResponseRegisteredUserJson> Execute(RequestRegisterUserJson request)
         {
@@ -19,17 +34,10 @@ namespace MyRecipeBook.Application.UseCases.User
             Validate(request);
 
             //Mapear a request em uma entidade
-            var autoMapper = new AutoMapper.MapperConfiguration(options =>
-            {
-                options.AddProfile(new AutoMapping());
-            }).CreateMapper();
-
-            var user = autoMapper.Map<Domain.Entities.User>(request);
+            var user = _mapper.Map<Domain.Entities.User>(request);
 
             //Criptografar a senha
-            var passwordEncripter = new PasswordEncripter();
-
-            var encryptedPassword = passwordEncripter.Encrypt(request.Password);
+            user.Password = _passwordEncripter.Encrypt(request.Password);
 
             //Salvar a entidade no banco de dados
             await _userWriteOnlyRepository.Add(user);

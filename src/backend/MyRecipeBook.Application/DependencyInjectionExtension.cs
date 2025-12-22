@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using MyRecipeBook.Domain.Repositories.User;
-using MyRecipeBook.Infrastructure.DataAccess;
-using MyRecipeBook.Infrastructure.DataAccess.Repositories;
+﻿using Microsoft.Extensions.DependencyInjection;
+using MyRecipeBook.Application.Services.AutoMapper;
+using MyRecipeBook.Application.Services.Cryptography;
+using MyRecipeBook.Application.UseCases.User;
+using MyRecipeBook.Application.UseCases.User.Register;
 
 namespace MyRecipeBook.Application
 {
@@ -11,26 +11,29 @@ namespace MyRecipeBook.Application
         public static void AddApplicationDependencies(this IServiceCollection services)
         {
             // Add application related dependencies here
-            AddRepositories(services);
-            AddDbContext_MySql(services);
+            AddAutoMapper(services);
+            AddUseCases(services);
+            AddPasswordEncripter(services);
         }
 
-        private static void AddDbContext_MySql(IServiceCollection services)
+        private static void AddAutoMapper(IServiceCollection services)
         {
-            var connectionString = "Server=localhost;Database=meulivrodereceitas;Uid=root;Pwd=@Password123";
-
-            var serverVersion = new MySqlServerVersion(new Version(8, 0, 44));
-
-            services.AddDbContext<MyRecipeBookDbContext>(dbContextOptions =>
+            var autoMapper = new AutoMapper.MapperConfiguration(options =>
             {
-                dbContextOptions.UseMySql(connectionString, serverVersion);
-            });
-                
+                options.AddProfile(new AutoMapping());
+            }).CreateMapper();
+
+            services.AddScoped(option => autoMapper);
         }
-        private static void AddRepositories(IServiceCollection services)
+
+        private static void AddUseCases(IServiceCollection services)
         {
-            services.AddScoped<IUserWriteOnlyRepository, UserRepository>();
-            services.AddScoped<IUserReadOnlyRepository, UserRepository>();
+            services.AddScoped<IRegisterUserUseCase, RegisterUserUseCase>();
+        }
+
+        private static void AddPasswordEncripter(IServiceCollection services)
+        {
+            services.AddScoped(option => new PasswordEncripter());
         }
     }
 }
