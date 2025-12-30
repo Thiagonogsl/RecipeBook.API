@@ -1,5 +1,5 @@
 ﻿using FluentMigrator;
-using FluentMigrator.Builders.Create.Table
+using FluentMigrator.Builders.Create.Table;
 
 namespace MyRecipeBook.Infrastructure.Migrations.Versions
 {
