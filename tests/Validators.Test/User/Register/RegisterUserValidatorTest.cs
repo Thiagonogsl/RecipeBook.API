@@ -34,7 +34,7 @@ namespace Validators.Test.User.Register
             result.Errors.ShouldSatisfyAllConditions(
                 e => e.ShouldHaveSingleItem(),
                 e => e.ShouldContain(m => m.ErrorMessage.Equals(ResourceMessagesException.NAME_EMPTY))
-            ); 
+            );
         }
 
         [Fact]
@@ -48,7 +48,7 @@ namespace Validators.Test.User.Register
             var result = validator.Validate(request);
 
             //Assert
-            result.IsValid.ShouldBeFalse(); 
+            result.IsValid.ShouldBeFalse();
             result.Errors.ShouldSatisfyAllConditions(
                 e => e.ShouldHaveSingleItem(),
                 e => e.ShouldContain(m => m.ErrorMessage.Equals(ResourceMessagesException.EMAIL_EMPTY))
@@ -70,6 +70,28 @@ namespace Validators.Test.User.Register
             result.Errors.ShouldSatisfyAllConditions(
                 e => e.ShouldHaveSingleItem(),
                 e => e.ShouldContain(m => m.ErrorMessage.Equals(ResourceMessagesException.EMAIL_INVALID))
+            );
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        [InlineData(4)]
+        [InlineData(5)]
+        public void Error_Password_Invalid(int passwordLenght)
+        {
+            var validator = new RegisterUserValidator();
+
+            var request = RequestRegisterUserJsonBuilder.Build(passwordLenght);
+
+            var result = validator.Validate(request);
+
+            //Assert
+            result.IsValid.ShouldBeFalse();
+            result.Errors.ShouldSatisfyAllConditions(
+                e => e.ShouldHaveSingleItem(),
+                e => e.ShouldContain(m => m.ErrorMessage.Equals(ResourceMessagesException.PASSWORD_INVALID))
             );
         }
     }
