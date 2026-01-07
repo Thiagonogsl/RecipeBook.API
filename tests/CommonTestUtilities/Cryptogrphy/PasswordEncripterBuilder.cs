@@ -6,7 +6,7 @@ namespace CommonTestUtilities.Cryptogrphy
     {
         public static PasswordEncripter Build()
         {
-            return new PasswordEncripter("teste");
+            return new PasswordEncripter("abc123");
         }
     }
 }

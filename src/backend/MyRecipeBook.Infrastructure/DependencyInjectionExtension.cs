@@ -16,8 +16,13 @@ namespace MyRecipeBook.Infrastructure
         public static void AddInfrastructureDependencies(this IServiceCollection services, IConfiguration configuration)
         {
             // Add infrastructure related dependencies here
-            AddDbContext_MySql(services, configuration);
             AddRepositories(services);
+
+            //Checa se é um teste de unidade
+            if (configuration.IsUnitTestEnviroment())
+                return;
+
+            AddDbContext_MySql(services, configuration);
             AddFluentMigrator(services, configuration);
         }
         private static void AddDbContext_MySql(IServiceCollection services, IConfiguration configuration)
