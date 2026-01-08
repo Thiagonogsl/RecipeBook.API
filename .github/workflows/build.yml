@@ -11,7 +11,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -21,7 +21,7 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      - name: Setup Java
+      - name: Setup Java 17
         uses: actions/setup-java@v4
         with:
           distribution: zulu
@@ -43,7 +43,7 @@ jobs:
             /o:"thiagonog" `
             /d:sonar.host.url="https://sonarcloud.io" `
             /d:sonar.token="${{ secrets.SONAR_TOKEN }}" `
-            /d:sonar.cs.vscoveragexml.reportsPaths="coverage.xml"
+            /d:sonar.cs.vscoveragexml.reportsPaths="coverage/coverage.xml"
 
       - name: Build
         shell: pwsh
@@ -52,9 +52,10 @@ jobs:
       - name: Test with coverage
         shell: pwsh
         run: |
+          mkdir coverage
           dotnet-coverage collect "dotnet test" `
             -f xml `
-            -o "coverage.xml"
+            -o "coverage/coverage.xml"
 
       - name: SonarCloud End
         shell: pwsh
