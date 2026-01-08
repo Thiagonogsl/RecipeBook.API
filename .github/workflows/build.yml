@@ -2,17 +2,16 @@ name: Build, Test and Analyze with SonarCloud
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request:
-    types: [opened, synchronize, reopened]
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -22,15 +21,17 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      - name: Setup Java 17
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: zulu
           java-version: 17
 
-      - name: Install SonarScanner
+      - name: Install tools
         shell: pwsh
-        run: dotnet tool install --global dotnet-sonarscanner
+        run: |
+          dotnet tool install --global dotnet-sonarscanner
+          dotnet tool install --global dotnet-coverage
 
       - name: SonarCloud Begin
         shell: pwsh
@@ -42,19 +43,18 @@ jobs:
             /o:"thiagonog" `
             /d:sonar.host.url="https://sonarcloud.io" `
             /d:sonar.token="${{ secrets.SONAR_TOKEN }}" `
-            /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml"
+            /d:sonar.cs.vscoveragexml.reportsPaths="coverage.xml"
 
       - name: Build
         shell: pwsh
         run: dotnet build --no-incremental
 
-      - name: Test with OpenCover
+      - name: Test with coverage
         shell: pwsh
         run: |
-          dotnet test `
-            /p:CollectCoverage=true `
-            /p:CoverletOutputFormat=opencover `
-            /p:CoverletOutput=TestResults/coverage.opencover.xml
+          dotnet-coverage collect "dotnet test" `
+            -f xml `
+            -o "coverage.xml"
 
       - name: SonarCloud End
         shell: pwsh
