@@ -11,7 +11,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -27,14 +27,10 @@ jobs:
           distribution: zulu
           java-version: 17
 
-      - name: Install tools
-        shell: pwsh
-        run: |
-          dotnet tool install --global dotnet-sonarscanner
-          dotnet tool install --global dotnet-coverage
+      - name: Install SonarScanner
+        run: dotnet tool install --global dotnet-sonarscanner
 
       - name: SonarCloud Begin
-        shell: pwsh
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
@@ -43,22 +39,18 @@ jobs:
             /o:"thiagonog" `
             /d:sonar.host.url="https://sonarcloud.io" `
             /d:sonar.token="${{ secrets.SONAR_TOKEN }}" `
-            /d:sonar.cs.vscoveragexml.reportsPaths="coverage/coverage.xml"
+            /d:sonar.cs.opencover.reportsPaths="coverage/**/coverage.cobertura.xml"
 
       - name: Build
-        shell: pwsh
         run: dotnet build --no-incremental
 
       - name: Test with coverage
-        shell: pwsh
         run: |
-          mkdir coverage
-          dotnet-coverage collect "dotnet test" `
-            -f xml `
-            -o "coverage/coverage.xml"
+          dotnet test `
+            --collect:"XPlat Code Coverage" `
+            --results-directory ./coverage
 
       - name: SonarCloud End
-        shell: pwsh
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
