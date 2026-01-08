@@ -31,10 +31,11 @@ namespace Validators.Test.User.Register
 
             //Assert
             result.IsValid.ShouldBeFalse(); //Garante que ocorreu um erro
-            result.Errors.ShouldSatisfyAllConditions(
-                e => e.ShouldHaveSingleItem(),
-                e => e.ShouldContain(m => m.ErrorMessage.Equals(ResourceMessagesException.NAME_EMPTY))
-            );
+            result.Errors.ShouldSatisfyAllConditions(e =>
+            {
+                e.ShouldHaveSingleItem();
+                e.ShouldContain(m => m.ErrorMessage.Equals(ResourceMessagesException.NAME_EMPTY));
+            });
         }
 
         [Fact]
@@ -49,10 +50,11 @@ namespace Validators.Test.User.Register
 
             //Assert
             result.IsValid.ShouldBeFalse();
-            result.Errors.ShouldSatisfyAllConditions(
-                e => e.ShouldHaveSingleItem(),
-                e => e.ShouldContain(m => m.ErrorMessage.Equals(ResourceMessagesException.EMAIL_EMPTY))
-            );
+            result.Errors.ShouldSatisfyAllConditions(e =>
+            {
+                e.ShouldHaveSingleItem();
+                e.ShouldContain(m => m.ErrorMessage.Equals(ResourceMessagesException.EMAIL_EMPTY));
+            });
         }
 
         [Fact]
@@ -67,10 +69,11 @@ namespace Validators.Test.User.Register
 
             //Assert
             result.IsValid.ShouldBeFalse();
-            result.Errors.ShouldSatisfyAllConditions(
-                e => e.ShouldHaveSingleItem(),
-                e => e.ShouldContain(m => m.ErrorMessage.Equals(ResourceMessagesException.EMAIL_INVALID))
-            );
+            result.Errors.ShouldSatisfyAllConditions(e =>
+            {
+                e.ShouldHaveSingleItem();
+                e.ShouldContain(m => m.ErrorMessage.Equals(ResourceMessagesException.EMAIL_INVALID));
+            }); ;
         }
 
         [Theory]
@@ -89,10 +92,11 @@ namespace Validators.Test.User.Register
 
             //Assert
             result.IsValid.ShouldBeFalse();
-            result.Errors.ShouldSatisfyAllConditions(
-                e => e.ShouldHaveSingleItem(),
-                e => e.ShouldContain(m => m.ErrorMessage.Equals(ResourceMessagesException.PASSWORD_INVALID))
-            );
+            result.Errors.ShouldSatisfyAllConditions(e =>
+            {
+                e.ShouldHaveSingleItem();
+                e.ShouldContain(m => m.ErrorMessage.Equals(ResourceMessagesException.PASSWORD_INVALID));
+            });
         }
     }
 }
