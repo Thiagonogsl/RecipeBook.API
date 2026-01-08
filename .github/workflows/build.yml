@@ -17,18 +17,18 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up .NET
+      - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
 
-      - name: Set up Java 17
+      - name: Setup Java 17
         uses: actions/setup-java@v4
         with:
-          java-version: 17
           distribution: zulu
+          java-version: 17
 
-      - name: Install SonarScanner for .NET
+      - name: Install SonarScanner
         shell: pwsh
         run: dotnet tool install --global dotnet-sonarscanner
 
@@ -42,19 +42,22 @@ jobs:
             /o:"thiagonog" `
             /d:sonar.host.url="https://sonarcloud.io" `
             /d:sonar.token="${{ secrets.SONAR_TOKEN }}" `
-            /d:sonar.cs.cobertura.reportsPaths="**/coverage.cobertura.xml"
+            /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
 
       - name: Build
         shell: pwsh
         run: dotnet build --no-incremental
 
-      - name: Test with coverage
+      - name: Test with OpenCover
         shell: pwsh
-        run: dotnet test --collect "XPlat Code Coverage"
+        run: |
+          dotnet test `
+            /p:CollectCoverage=true `
+            /p:CoverletOutputFormat=opencover `
+            /p:CoverletOutput=TestResults/coverage.opencover.xml
 
       - name: SonarCloud End
         shell: pwsh
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
-
