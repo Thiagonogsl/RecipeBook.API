@@ -27,13 +27,14 @@ jobs:
       - name: Build
         run: dotnet build --no-restore
 
-      - name: Run xUnit tests with coverage
+      - name: Run tests with coverage
         run: |
-          dotnet test \
+          dotnet test MyRecipeBook.sln \
             --no-build \
             /p:CollectCoverage=true \
-            /p:CoverletOutput=TestResults/coverage/ \
+            /p:CoverletOutput=coverage.opencover.xml \
             /p:CoverletOutputFormat=opencover
+
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
