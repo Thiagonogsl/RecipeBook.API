@@ -45,7 +45,7 @@ jobs:
         with:
           args: >
             -Dsonar.projectKey=Thiagonogsl_RecipeBook.API
-            -Dsonar.organization=thiagonogsl
+            -Dsonar.organization=Thiagonogsl
             -Dsonar.cs.opencover.reportsPaths=**/coverage.opencover.xml
             -Dsonar.sources=src
             -Dsonar.tests=tests
