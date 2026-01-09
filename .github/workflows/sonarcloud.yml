@@ -2,12 +2,15 @@ name: SonarCloud Analysis
 
 on:
   push:
-    branches: [ main, master ]
+    branches:
+      - main
+      - master
   pull_request:
     types: [opened, synchronize, reopened]
 
 jobs:
   build:
+    name: Build, Test and Analyze
     runs-on: ubuntu-latest
 
     steps:
@@ -41,7 +44,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            -Dsonar.projectKey=Thiagonogsl_MyRecipeBook.API
+            -Dsonar.projectKey=Thiagonogsl_RecipeBook.API
             -Dsonar.organization=thiagonogsl
             -Dsonar.cs.opencover.reportsPaths=**/coverage.opencover.xml
             -Dsonar.sources=src
