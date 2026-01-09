@@ -1,0 +1,52 @@
+name: SonarCloud Analysis
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  build:
+    name: Build, Test and Analyze
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore MeuLivroDeReceitas_Development/MyRecipeBook.sln
+
+      - name: Build
+        run: dotnet build MeuLivroDeReceitas_Development/MyRecipeBook.sln --no-restore
+
+      - name: Run tests with coverage
+        run: |
+          dotnet test MeuLivroDeReceitas_Development/MyRecipeBook.sln \
+            --no-build \
+            /p:CollectCoverage=true \
+            /p:CoverletOutput=TestResults/coverage/ \
+            /p:CoverletOutputFormat=opencover
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v2
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=Thiagonogsl_MyRecipebook.API
+            -Dsonar.organization=thiagonogsl
+            -Dsonar.cs.opencover.reportsPaths=**/coverage.opencover.xml
+            -Dsonar.sources=MeuLivroDeReceitas_Development/src
+            -Dsonar.tests=MeuLivroDeReceitas_Development/tests
+            -Dsonar.exclusions=**/Migrations/**,**/Program.cs
