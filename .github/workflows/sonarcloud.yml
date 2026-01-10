@@ -2,19 +2,17 @@ name: CI + SonarCloud
 
 on:
   push:
-    branches: [ main ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ main ]
+    branches: [ "main" ]
 
 jobs:
-  build-test-analyze:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: windows-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout do código
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -22,18 +20,42 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Restore
-        run: dotnet restore MyRecipeBook.sln
+        run: dotnet restore
 
       - name: Build
-        run: dotnet build MyRecipeBook.sln --no-restore
+        run: dotnet build --no-restore
 
-      - name: Run tests with coverage
+      # ---------------------------
+      # TESTES + COVERAGE POR PROJETO
+      # ---------------------------
+
+      - name: Test UseCases
         run: |
-          dotnet test MyRecipeBook.sln \
-            --no-build \
-            /p:CollectCoverage=true \
-            /p:CoverletOutputFormat=opencover \
+          dotnet test tests/UseCases.Test/UseCases.Test.csproj `
+            --no-build `
+            /p:CollectCoverage=true `
+            /p:CoverletOutputFormat=opencover `
             /p:CoverletOutput=coverage/
+
+      - name: Test Validators
+        run: |
+          dotnet test tests/Validators.Test/Validators.Test.csproj `
+            --no-build `
+            /p:CollectCoverage=true `
+            /p:CoverletOutputFormat=opencover `
+            /p:CoverletOutput=coverage/
+
+      - name: Test WebApi
+        run: |
+          dotnet test tests/WebApi.Test/WebApi.Test.csproj `
+            --no-build `
+            /p:CollectCoverage=true `
+            /p:CoverletOutputFormat=opencover `
+            /p:CoverletOutput=coverage/
+
+      # ---------------------------
+      # SONARCLOUD
+      # ---------------------------
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
@@ -41,9 +63,10 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            -Dsonar.projectKey=Thiagonogsl_RecipeBook.API
-            -Dsonar.organization=thiagonogsl
-            -Dsonar.sources=src/backend,src/shared
+            -Dsonar.projectKey=thiagonogsl
+            -Dsonar.organization=Thiagonogsl
+            -Dsonar.sources=src
             -Dsonar.tests=tests
-            -Dsonar.cs.opencover.reportsPaths=coverage/**/coverage.opencover.xml
+            -Dsonar.cs.opencover.reportsPaths=tests/**/coverage/coverage.opencover.xml
             -Dsonar.exclusions=**/Migrations/**,**/Program.cs
+
